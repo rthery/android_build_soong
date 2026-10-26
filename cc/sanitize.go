@@ -645,6 +645,11 @@ func (sanitize *sanitize) begin(ctx BaseModuleContext) {
 		s.Scs = nil
 	}
 
+	// Legacy vendor code that uses x18 as a scratch register breaks SCS code on the same thread.
+	if ctx.Config().VendorConfig("sanitize").Bool("disable_scs") {
+		s.Scs = nil
+	}
+
 	// Memtag_heap is only implemented on AArch64.
 	// Memtag ABI is Android specific for now, so disable for host.
 	if ctx.Arch().ArchType != android.Arm64 || !ctx.toolchain().Bionic() || ctx.Host() {
